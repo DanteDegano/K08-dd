@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingeniería en Sistemas</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Ingeniería en Sistemas de Información</h1>
+    <button id="darkModeToggle" class="extravagant" style="min-width:180px;display:inline-flex;align-items:center;justify-content:center;width: 300px;"><span id="darkModeIcon">🌙</span> <span id="darkModeText">Modo Oscuro</span></button>
+  </header>
+  <main class="grid">
+    <div id="materias"></div>
+  </main>
+  <aside id="sugerencias-bot" style="position:sticky;bottom:0;left:0;right:0;z-index:1000;max-width:1200px;margin:30px auto 0 auto;padding:32px 32px 20px 32px;background:#f5f5fa;border-radius:16px;box-shadow:0 2px 16px #0002;min-height:120px;transition:all 0.2s;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h2 style="margin-bottom:10px;font-size:1.6em;color:#7a1b63;">🤖 Sugerencias del Bot</h2>
+      <button id="toggle-sugerencias" style="background:#7a1b63;color:#fff;border:none;border-radius:6px;padding:8px 22px;font-size:1.1em;cursor:pointer;min-width:180px;display:inline-flex;align-items:center;justify-content:center;">Ocultar</button>
+    </div>
+    <div id="sugerencias-contenido" style="font-size:1.25em;color:#333;line-height:1.7;max-height:420px;overflow:auto;transition:max-height 0.2s;"></div>
+  </aside>
+  <script src="script.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+// === CONFIGURACIÓN FIREBASE ===
+const firebaseConfig = {
+  apiKey: "AIzaSyAgcl8xQ0bRJkNHWMKxeUsnvKGm9_R8vCU",
+  authDomain: "k08-dd.firebaseapp.com",
+  projectId: "k08-dd",
+  storageBucket: "k08-dd.appspot.com", // corregido
+  messagingSenderId: "169530641644",
+  appId: "1:169530641644:web:53f46874dc3f85101969c9",
+  measurementId: "G-CZM8R41ST9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// 3. Identificador de usuario (puede ser un prompt, email, o localStorage)
+let userId = localStorage.getItem('userId');
+if (!userId) {
+  userId = prompt('Ingresá un nombre de usuario único para guardar tu avance:');
+  localStorage.setItem('userId', userId);
+}
+// === FUNCIONES DE GUARDADO Y RESTAURACIÓN ===
+async function guardarEstadosEnFirestore() {
+  const estados = {};
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const estado = m.querySelector('.estado-select')?.value || 'ninguno';
+    estados[nombre] = estado;
+  });
+  await db.collection('usuarios').doc(userId).set({estados});
+}
+async function restaurarEstadosDesdeFirestore() {
+  const doc = await db.collection('usuarios').doc(userId).get();
+  if (doc.exists) {
+    const estados = doc.data().estados || {};
+    document.querySelectorAll('.materia').forEach(m => {
+      const nombre = m.getAttribute('data-nombre');
+      if (estados[nombre]) {
+        const sel = m.querySelector('.estado-select');
+        sel.value = estados[nombre];
+        sel.className = 'estado-select ' + estados[nombre];
+        m.classList.remove('en-curso', 'aprobada', 'cursada', 'promocionada', 'bloqueada');
+        if (estados[nombre] !== 'ninguno') m.classList.add(estados[nombre]);
+      }
+    });
+    if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
+  }
+}
+// Render dinámico de materias desde correlativas.json
+function crearMateriaHTML(m) {
+  return `
+    <div class="materia" 
+      data-nombre="${m.nombre}"
+      data-correlativas-para-cursar-aprobadas='${JSON.stringify(m.correlativas_para_cursar_aprobadas)}'
+      data-correlativas-para-cursar-cursadas='${JSON.stringify(m.correlativas_para_cursar_cursadas)}'
+      data-correlativas-para-final='${JSON.stringify(m.correlativas_para_final)}'>
+      <h3>${m.nombre}</h3>
+      <p><strong>Horas semanales:</strong> ${m.horas_semanales ? m.horas_semanales + ' Hs' : '-'}</p>
+      <label>Estado:
+        <select class="estado-select">
+          <option value="ninguno">—</option>
+          <option value="en-curso">En Curso</option>
+          <option value="cursada">Cursada</option>
+          <option value="aprobada">Aprobada</option>
+          <option value="promocionada">Promocionada</option>
+        </select>
+      </label>
+      <div class="correlativas">
+        <strong>Requisitos para cursar:</strong>
+        <ul style="list-style:none;padding-left:0;margin:0">
+          <li><strong>Aprobadas/Promocionadas:</strong> <span class="correlativas-aprobadas">${m.correlativas_para_cursar_aprobadas.length ? m.correlativas_para_cursar_aprobadas.join(', ') : '—'}</span></li>
+          <li><strong>Cursadas:</strong> <span class="correlativas-cursadas">${m.correlativas_para_cursar_cursadas.length ? m.correlativas_para_cursar_cursadas.join(', ') : '—'}</span></li>
+        </ul>
+        <strong>Requisitos para Final:</strong>
+        <ul style="list-style:none;padding-left:0;margin:0">
+          <li><strong>Aprobadas/Promocionadas:</strong> <span class="correlativas-aprobadas-final">${m.correlativas_para_final.length ? m.correlativas_para_final.join(', ') : '—'}</span></li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('correlativas.json')
+    .then(response => response.json())
+    .then(data => {
+      // Agrupar por año si existe el campo "anio"
+      const materiasPorAnio = {};
+      data.forEach(m => {
+        const anio = m.anio || 'Sin año';
+        if (!materiasPorAnio[anio]) materiasPorAnio[anio] = [];
+        materiasPorAnio[anio].push(m);
+      });
+      const materiasDiv = document.getElementById('materias');
+      materiasDiv.innerHTML = '';
+      // Crear una grilla de 5 columnas (niveles)
+      const niveles = [1,2,3,4,5];
+      materiasDiv.innerHTML = `<div class="niveles-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;">${niveles.map(anio => {
+        const materias = (materiasPorAnio[anio]||[]).map(crearMateriaHTML).join('');
+        return `<div class="año"><h2>${anio}° Nivel</h2>${materias}</div>`;
+      }).join('')}</div>`;
+      // Inicializar lógica de selects y colores
+      setTimeout(() => {
+        document.querySelectorAll('.estado-select').forEach(sel => {
+          sel.addEventListener('change', async function() {
+            if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
+            // Guardar estado en Firestore
+            await guardarEstadosEnFirestore();
+          });
+        });
+        // Restaurar estados desde Firestore al cargar
+        restaurarEstadosDesdeFirestore();
+        if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
+      }, 0);
+    });
+});
+// SUGERENCIAS BOT
+function sugerenciasBot() {
+  const materias = Array.from(document.querySelectorAll('.materia'));
+  // Porcentajes de avance
+  const total = materias.length;
+  let aprobadas = 0, promocionadas = 0, cursadas = 0;
+  materias.forEach(m => {
+    const estado = m.querySelector('.estado-select')?.value;
+    if (estado === 'aprobada') aprobadas++;
+    if (estado === 'promocionada') promocionadas++;
+    if (estado === 'cursada') cursadas++;
+  });
+  const completadas = aprobadas + promocionadas;
+  // Ahora las cursadas suman 0.5 en el avance
+  const porcentajeConCursada = Math.round(((completadas + cursadas * 0.5) / total) * 100);
+  let html = `<div style='font-size:1.1em;margin-bottom:10px;'>
+    <b>Avance de la carrera: <span style='color:#388e3c;font-weight:bold;'>${porcentajeConCursada}%</span></b><br>
+  </div>`;
+  // Agrupar materias por nivel
+  const materiasPorNivel = {};
+  materias.forEach(m => {
+    const nivel = parseInt(m.closest('.año')?.querySelector('h2')?.textContent) || 99;
+    if (!materiasPorNivel[nivel]) materiasPorNivel[nivel] = [];
+    materiasPorNivel[nivel].push(m);
+  });
+  // Ordenar niveles de menor a mayor
+  const niveles = Object.keys(materiasPorNivel).map(Number).sort((a,b) => a-b);
+
+  let sugeridasCursar = [];
+  let sugeridasFinal = [];
+  // Buscar hasta 3 materias de los niveles más bajos disponibles para cursar
+  for (const nivel of niveles) {
+    const mats = materiasPorNivel[nivel];
+    const paraCursar = mats.filter(m =>
+      (nivel === 1 || m.classList.contains('disponible-cursar')) &&
+      !m.classList.contains('aprobada') &&
+      !m.classList.contains('cursada') &&
+      !m.classList.contains('promocionada') &&
+      !m.classList.contains('en-curso')
+    );
+    for (const m of paraCursar) {
+      if (sugeridasCursar.length < 3) {
+        sugeridasCursar.push({nivel, m});
+      }
+    }
+    if (sugeridasCursar.length >= 3) break;
+  }
+  // Buscar finales solo del nivel más bajo disponible
+  for (const nivel of niveles) {
+    const mats = materiasPorNivel[nivel];
+    const paraFinal = mats.filter(m =>
+      m.classList.contains('cursada') &&
+      !m.classList.contains('aprobada') &&
+      !m.classList.contains('promocionada')
+    );
+    if (paraFinal.length > 0) {
+      sugeridasFinal = paraFinal.map(m => ({nivel, m}));
+      break;
+    }
+  }
+  if (sugeridasCursar.length > 0) {
+    html += `<u><b>Materias que deberias cursar:</b></u><ul>`;
+    sugeridasCursar.forEach(({nivel, m}) => {
+      html += `<li><b>${m.getAttribute('data-nombre')}</b> <span style='color:#888;font-size:0.9em;'>(Nivel ${nivel})</span></li>`;
+    });
+    html += '</ul> <br>';
+  
+  }
+  if (sugeridasFinal.length > 0) {
+    html += `<hr><u><b>Finales que deberías rendir (nivel más bajo):</b></u><ul>`;
+    sugeridasFinal.forEach(({nivel, m}) => {
+      html += `<li><b>${m.getAttribute('data-nombre')}</b> <span style='color:#888;font-size:0.9em;'>(Nivel ${nivel})</span></li>`;
+    });
+    html += '</ul> <br>';
+  }
+  if (sugeridasCursar.length === 0 && sugeridasFinal.length === 0) {
+    html = 'No hay materias ni finales recomendados según tu avance actual. ¡Revisá tus estados!';
+  }
+  document.getElementById('sugerencias-contenido').innerHTML = html;
+}
+// Llamar sugerenciasBot cada vez que se actualizan los estados
+window.sugerenciasBot = sugerenciasBot;
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(sugerenciasBot, 500);
+});
+// Llamar desde script.js cuando se actualizan los colores/estados
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Botón para ocultar/desplegar sugerencias (animación slide y fade)
+    const aside = document.getElementById('sugerencias-bot');
+    const btn = document.getElementById('toggle-sugerencias');
+    const contenido = document.getElementById('sugerencias-contenido');
+    let visible = true;
+    btn.addEventListener('click', () => {
+      visible = !visible;
+      if (!visible) {
+        contenido.style.maxHeight = '0';
+        contenido.style.opacity = '0';
+        contenido.style.pointerEvents = 'none';
+        btn.textContent = 'Mostrar';
+      } else {
+        contenido.style.maxHeight = '420px';
+        contenido.style.opacity = '1';
+        contenido.style.pointerEvents = '';
+        btn.textContent = 'Ocultar';
+      }
+    });
+    contenido.style.transition = 'max-height 0.3s, opacity 0.3s';
+    contenido.style.maxHeight = '420px';
+    contenido.style.opacity = '1';
+  });
+  // Animación y cambio de ícono del botón de modo oscuro
+function setDarkModeButton() {
+  const btn = document.getElementById('darkModeToggle');
+  const icon = document.getElementById('darkModeIcon');
+  const text = document.getElementById('darkModeText');
+  // Quitar estrellas previas
+  btn.querySelectorAll('.star').forEach(e => e.remove());
+  if (document.body.classList.contains('dark-mode')) {
+    icon.textContent = '🌙';
+    text.textContent = 'Modo Oscuro';
+    btn.classList.add('luna');
+    btn.classList.remove('sol');
+    // Agregar estrellas
+    for (let i = 0; i < 18; i++) {
+      const star = document.createElement('span');
+      star.className = 'star';
+      const size = Math.random() * 2.5 + 1.5;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.left = `${Math.random() * 95}%`;
+      star.style.top = `${Math.random() * 80}%`;
+      star.style.animationDelay = `${Math.random() * 2}s`;
+      btn.appendChild(star);
+    }
+  } else {
+    icon.textContent = '☀️';
+    text.textContent = 'Modo Claro';
+    btn.classList.add('sol');
+    btn.classList.remove('luna');
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('darkModeToggle');
+  btn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    setDarkModeButton();
+    if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
+  });
+  setDarkModeButton();
+});
+  </script>
+</body>
+</html>

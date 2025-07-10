@@ -1,0 +1,268 @@
+[
+  {
+    "nombre": "Álgebra y Geometría Analítica",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Análisis Matemático I",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Matemática Discreta",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Algoritmos y Estructura de Datos",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Arquitectura de Computadoras",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Sistemas y Organizaciones",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Ingeniería y Sociedad",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Química",
+    "anio": 1,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Analisis de Sistemas",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Sistemas y Organizaciones", "Algoritmos y Estructura de Datos"],
+    "correlativas_para_final": ["Sistemas y Organizaciones", "Algoritmos y Estructura de Datos"]
+  },
+  {
+    "nombre": "Sistemas de Representación",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Análisis Matemático II",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Análisis Matemático I", "Álgebra y Geometría Analítica"],
+    "correlativas_para_final": ["Análisis Matemático I", "Álgebra y Geometría Analítica"]
+  },
+  {
+    "nombre": "Sintaxis y Semántica de los Lenguajes",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos"],
+    "correlativas_para_final": ["Matemática Discreta", "Algoritmos y Estructura de Datos"]
+  },
+  {
+    "nombre": "Fisica I",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Paradigmas de Programación",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos"],
+    "correlativas_para_final": ["Matemática Discreta", "Algoritmos y Estructura de Datos"]
+  },
+  {
+    "nombre": "Inglés I",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Probabilidad y Estadística",
+    "anio": 2,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Análisis Matemático I", "Álgebra y Geometría Analítica"],
+    "correlativas_para_final": ["Análisis Matemático I", "Álgebra y Geometría Analítica"]
+  },
+  {
+    "nombre": "Diseño de Sistemas",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos"],
+    "correlativas_para_cursar_cursadas": ["Análisis Matemático I", "Paradigmas de Programación"],
+    "correlativas_para_final": ["Análisis Matemático I", "Paradigmas de Programación"]
+  },
+  {
+    "nombre": "Sistemas Operativos",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos", "Arquitectura de Computadoras"],
+    "correlativas_para_final": ["Matemática Discreta", "Algoritmos y Estructura de Datos", "Arquitectura de Computadoras"]
+  },
+  {
+    "nombre": "Fisica II",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": ["Análisis Matemático I", "Fisica I"],
+    "correlativas_para_final": ["Análisis Matemático I", "Fisica I"]
+  },
+  {
+    "nombre": "Economía",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": ["Algoritmos y Estructura de Datos", "Sistemas y Organizaciones"],
+    "correlativas_para_cursar_cursadas": ["Analisis de sistemas"],
+    "correlativas_para_final": ["Analisis de sistemas"]
+  },
+  {
+    "nombre": "Gestión de Datos",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos", "sistemas y Organizaciones"],
+    "correlativas_para_cursar_cursadas": ["Analisis de sistemas", "Paradigmas de Programación", "Sintaxis y Semántica de los Lenguajes"],
+    "correlativas_para_final": ["Analisis de sistemas", "Paradigmas de Programación", "Sintaxis y Semántica de los Lenguajes"]
+  },
+  {
+    "nombre": "Inglés II",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Matemática Superior",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": ["Análisis Matemático I", "Álgebra y Geometría Analítica"],
+    "correlativas_para_cursar_cursadas": ["Análisis Matemático II"],
+    "correlativas_para_final": ["Análisis Matemático II"]
+  },
+  {
+    "nombre": "Legislación",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": ["Sistemas y Organizaciones", "Algoritmos y Estructura de Datos"],
+    "correlativas_para_cursar_cursadas": ["Analisis de sistemas", "ingenieria y sociedad"],
+    "correlativas_para_final": ["Analisis de sistemas", "ingenieria y sociedad"]
+  },
+  {
+    "nombre": "Electiva I",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Administración de Recursos",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Arquitectura de Computadoras", "Ingles I", "Analisis de Sistemas", "Paradigmas de Programación"],
+    "correlativas_para_cursar_cursadas": ["Diseño de Sistemas","Sistemas Operativos","Economía"],
+    "correlativas_para_final": ["Diseño de Sistemas","Sistemas Operativos","Economía"]
+  },
+  {
+    "nombre": "Ingeniería de Software",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Analisis de Sistemas", "Sintaxis y Semántica de los Lenguajes", "Paradigmas de Programación"],
+    "correlativas_para_cursar_cursadas": ["Probabilidad y Estadística","Diseño de Sistemas", "Gestion de Datos"],
+    "correlativas_para_final": ["Probabilidad y Estadística","Diseño de Sistemas", "Gestion de Datos"]
+  },
+  {
+    "nombre": "Teoría de Control",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Análisis Matemático II", "Fisica II"],
+    "correlativas_para_cursar_cursadas": ["Quimica", "Matematica Superior"],
+    "correlativas_para_final": ["Quimica", "Matematica Superior"]
+  },
+  {
+    "nombre": "Comunicaciones",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Análisis Matemático I", "Álgebra y Geometría Analítica", "Fisica I"],
+    "correlativas_para_cursar_cursadas": ["Arquitectura de Computadoras", "Análisis Matemático II", "Fisica II"],
+    "correlativas_para_final": ["Arquitectura de Computadoras", "Análisis Matemático II", "Fisica II"]
+  },
+  {
+    "nombre": "Redes de Información",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Matemática Discreta", "Algoritmos y Estructura de Datos", "Arquitectura de Computadoras", "Análisis Matemático II", "Fisica II"],
+    "correlativas_para_cursar_cursadas": ["Sistemas Operativos", "Comunicaciones"],
+    "correlativas_para_final": ["Sistemas Operativos", "Comunicaciones"]
+  },
+  {
+    "nombre": "Investigación Operativa",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Análisis Matemático II"],
+    "correlativas_para_cursar_cursadas": ["Probabilidad y Estadística", "Matematica Superior"],
+    "correlativas_para_final": ["Probabilidad y Estadística", "Matematica Superior"]
+  },
+  {
+    "nombre": "Simulación",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": ["Análisis Matemático II"],
+    "correlativas_para_cursar_cursadas": ["Probabilidad y Estadística", "Matematica Superior"],
+    "correlativas_para_final": [["Probabilidad y Estadística", "Matematica Superior"]]
+  },
+  {
+    "nombre": "Electiva II",
+    "anio": 4,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Administración Gerencial",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": ["Probabilidad y Estadística", "Matematica Superior", "Diseño de Sistemas"],
+    "correlativas_para_cursar_cursadas": ["Investigación Operativa", "Simulación"],
+    "correlativas_para_final": ["Investigación Operativa", "Simulación"]
+  },
+  {
+    "nombre": "Sistemas de Gestión",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": ["Probabilidad y Estadística", "Matematica Superior", "Sistemas Operativos", "Diseño de Sistemas", "Economía"],
+    "correlativas_para_cursar_cursadas": ["Administración de Recursos", "Investigación Operativa", "Simulación"],
+    "correlativas_para_final": ["Administración de Recursos", "Investigación Operativa", "Simulación"]
+  },
+  {
+    "nombre": "Inteligencia Artificial",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": ["Probabilidad y Estadística", "Matematica Superior", "Diseño de Sistemas"],
+    "correlativas_para_cursar_cursadas": ["Investigación Operativa", "Simulación"],
+    "correlativas_para_final": ["Investigación Operativa", "Simulación"]
+  },
+  {
+    "nombre": "Proyecto Final",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": [ "Ingenieria y sociedad", "sistemas de representacion", "Probabilidad y Estadística", "Sistemas Operativos", "Diseño de Sistemas", "Gestion de datos", "Sistemas de Gestión", "Inteligencia Artificial", "Economía","Ingles II", "Comunicaciones"],
+    "correlativas_para_cursar_cursadas": ["Legislacion", "Redes de Información", "Ingenieria en Software"],
+    "correlativas_para_final": ["Todas las materias aprobadas"]
+  },
+  {
+    "nombre": "Electiva III",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  }
+]
