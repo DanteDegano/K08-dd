@@ -114,6 +114,7 @@ function cargarMateriasDesdeJSON() {
     });
 }
 
+
 // === MODO OSCURO ===
 function setDarkModeButton() {
   const btn = document.getElementById('darkModeToggle');
