@@ -34,10 +34,14 @@ async function restaurarEstadosDesdeFirestore() {
 
 // === FUNCIONES DE MATERIAS ===
 function actualizarClaseMateria(materia, estado) {
+  console.log('actualizarClaseMateria:', materia, estado);
   const estados = ['en-curso', 'aprobada', 'cursada', 'promocionada', 'bloqueada'];
   materia.classList.remove(...estados);
   materia.querySelector('.estado-select').className = 'estado-select ' + estado;
-  if (estado !== 'ninguno') materia.classList.add(estado);
+  if (estado !== 'ninguno') {
+    materia.classList.add(estado);
+    console.log('Clase agregada:', estado);
+  }
 }
 
 function inicializarSelects() {
