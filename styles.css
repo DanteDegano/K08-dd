@@ -1,3 +1,18 @@
+/* Centrar ícono en el botón de modo oscuro */
+#darkModeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+#darkModeToggle span#darkModeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 1.5em;
+}
 @media (max-width: 720px) {
   #darkModeToggle {
     min-width: 0 !important;
@@ -399,4 +414,10 @@ body.dark-mode #sugerencias-contenido p {
 
 body.dark-mode #sugerencias-contenido ul {
   color: #ccc;
+}
+@media (max-width: 720px) {
+  /* Gap entre título y botón en sugerencias bot */
+  #sugerencias-bot > div {
+    gap: 16px !important;
+  }
 }

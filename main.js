@@ -4,6 +4,9 @@ async function cargarMateriasDesdeJSON() {
   const res = await fetch('correlativas.json');
     const data = await res.json();
 
+    // Guardar materiasData global para sugerencias
+    window._materiasData = data;
+
     const materiasPorAnio = {};
     data.forEach(m => {
       const anio = m.anio || 'Sin año';
@@ -179,12 +182,18 @@ function actualizarSugerencias() {
   // Recolectar materias con su nivel para priorizar
   const paraAnotar = [];
   const paraRendirFinal = [];
+  // Obtener niveles desde correlativas.json (window._materiasData)
   const materiasNivel = {};
-  document.querySelectorAll('.materia').forEach(m => {
-    const nombre = m.getAttribute('data-nombre');
-    const nivel = m.closest('.año')?.querySelector('h2')?.textContent?.match(/(\d+)/)?.[1] || '99';
-    materiasNivel[nombre] = parseInt(nivel, 10);
-  });
+  if (window._materiasData) {
+    window._materiasData.forEach(m => {
+      materiasNivel[m.nombre] = m.anio;
+    });
+  } else {
+    document.querySelectorAll('.materia').forEach(m => {
+      const nombre = m.getAttribute('data-nombre');
+      materiasNivel[nombre] = 99;
+    });
+  }
 
   document.querySelectorAll('.materia').forEach(m => {
     const nombre = m.getAttribute('data-nombre');
@@ -252,8 +261,10 @@ function inicializarSelects() {
     select.addEventListener('change', async () => {
       const materia = select.closest('.materia');
       actualizarClaseMateria(materia, select.value);
-      actualizarSugerencias();
       await guardarEstadosLocal();
+      // Forzar recarga de estados y sugerencias para reflejar cambios en Vercel
+      await restaurarEstadosLocal();
+      actualizarSugerencias();
     });
   });
 }
@@ -283,20 +294,19 @@ function inicializarSugerenciasBot() {
 // === Modo Oscuro ===
 function inicializarModoOscuro() {
   const boton = document.getElementById('darkModeToggle');
+  const icono = document.getElementById('darkModeIcon');
 
   const estadoInicial = localStorage.getItem('modoOscuro') === 'true';
   if (estadoInicial) {
     document.body.classList.add('dark-mode');
-    boton.classList.add('luna');
+    icono.textContent = '☀️';
   } else {
-    boton.classList.add('sol');
+    icono.textContent = '🌙';
   }
-
   boton.addEventListener('click', () => {
     const activo = document.body.classList.toggle('dark-mode');
     localStorage.setItem('modoOscuro', activo);
-    boton.classList.toggle('luna', activo);
-    boton.classList.toggle('sol', !activo);
+    icono.textContent = activo ? '☀️' : '🌙';
   });
 }
 
