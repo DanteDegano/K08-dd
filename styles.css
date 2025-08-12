@@ -1,3 +1,25 @@
+@media (max-width: 720px) {
+  #darkModeToggle {
+    min-width: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    font-size: 1.5em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+  }
+  #darkModeToggle span#darkModeIcon {
+    font-size: 1.5em !important;
+    margin: 0 !important;
+  }
+}
+@media (max-width: 720px) {
+  .acordeon-niveles > .acordeon-nivel:first-child {
+    margin-top: 40px;
+  }
+}
 @media (max-width: 400px) {
   html { font-size: 14px; }
   .acordeon-niveles { max-width: 100vw; margin: 0; }

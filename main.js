@@ -57,12 +57,7 @@ function inicializarAcordeonNiveles() {
       }
     });
   });
-  // Por defecto, abrir el primer nivel
-  const firstBtn = document.querySelector('.acordeon-titulo');
-  if (firstBtn) {
-    firstBtn.setAttribute('aria-expanded', 'true');
-    firstBtn.nextElementSibling.style.display = 'block';
-  }
+  // Por defecto, todos cerrados (no hacer nada)
 }
 
   } catch (error) {
@@ -267,7 +262,8 @@ function inicializarSelects() {
 function inicializarSugerenciasBot() {
   const btn = document.getElementById('toggle-sugerencias');
   const contenido = document.getElementById('sugerencias-contenido');
-  let visible = true;
+  // Si es mobile, iniciar oculto; si no, visible
+  let visible = window.innerWidth > 720;
 
   btn.addEventListener('click', () => {
     visible = !visible;
@@ -278,8 +274,10 @@ function inicializarSugerenciasBot() {
   });
 
   contenido.style.transition = 'max-height 0.3s, opacity 0.3s';
-  contenido.style.maxHeight = '420px';
-  contenido.style.opacity = '1';
+  contenido.style.maxHeight = visible ? '420px' : '0';
+  contenido.style.opacity = visible ? '1' : '0';
+  contenido.style.pointerEvents = visible ? '' : 'none';
+  btn.textContent = visible ? 'Ocultar' : 'Mostrar';
 }
 
 // === Modo Oscuro ===
