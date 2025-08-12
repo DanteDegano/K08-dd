@@ -410,13 +410,14 @@ firebase.auth().onAuthStateChanged(async user => {
     mostrarLogout(user.displayName || user.email);
     // Escuchar en tiempo real los cambios de estados
     unsubscribeEstados = db.collection('usuarios').doc(user.uid)
-      .onSnapshot(doc => {
-        const estados = doc.exists ? doc.data().estados : null;
-        if (estados) {
-          localStorage.setItem('estados', JSON.stringify(estados));
-        } else {
-          localStorage.removeItem('estados');
+      .onSnapshot(async doc => {
+        let estados = doc.exists ? doc.data().estados : null;
+        if (!estados) {
+          // Si hay datos en localStorage, usarlos; si no, objeto vacío
+          estados = JSON.parse(localStorage.getItem('estados') || '{}');
+          await guardarEstadosFirestore(user.uid, estados);
         }
+        localStorage.setItem('estados', JSON.stringify(estados));
         restaurarEstadosLocal();
         actualizarSugerencias();
       });
