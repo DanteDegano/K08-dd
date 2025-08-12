@@ -1,7 +1,7 @@
 // === Carga materias desde correlativas.json ===
 async function cargarMateriasDesdeJSON() {
   try {
-    const res = await fetch('correlativas.json');
+  const res = await fetch('../correlativas.json');
     const data = await res.json();
 
     const materiasPorAnio = {};
