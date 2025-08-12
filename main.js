@@ -438,36 +438,6 @@ firebase.auth().onAuthStateChanged(async user => {
   }
 });
 
-// === Integración con el flujo principal ===
-firebase.auth().onAuthStateChanged(async user => {
-  const overlay = document.getElementById('login-blur-overlay');
-  const logoutDiv = document.getElementById('logout-google-box');
-  if (user) {
-    if (overlay) overlay.remove();
-    mostrarLogout(user.displayName || user.email);
-    // Cargar estados del usuario
-    const estados = await cargarEstadosFirestore(user.uid);
-    if (estados) {
-      localStorage.setItem('estados', JSON.stringify(estados));
-    }
-    await restaurarEstadosLocal();
-    actualizarSugerencias();
-    // Guardar automáticamente en Firestore al cambiar estados
-    document.querySelectorAll('.estado-select').forEach(select => {
-      select.addEventListener('change', async () => {
-        const nuevosEstados = JSON.parse(localStorage.getItem('estados') || '{}');
-        await guardarEstadosFirestore(user.uid, nuevosEstados);
-      });
-    });
-  } else {
-    if (logoutDiv) logoutDiv.remove();
-    inicializarLoginGoogle();
-    // Limpiar estados locales
-    localStorage.removeItem('estados');
-    await restaurarEstadosLocal();
-    actualizarSugerencias();
-  }
-});
 
 // === Inicio ===
 window.addEventListener('DOMContentLoaded', () => {
