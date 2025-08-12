@@ -11,20 +11,59 @@ async function cargarMateriasDesdeJSON() {
       materiasPorAnio[anio].push(m);
     });
 
+
     const niveles = [1, 2, 3, 4, 5];
-    const materiasHTML = niveles.map(anio => {
-      const materias = (materiasPorAnio[anio] || []).map(crearMateriaHTML).join('');
-      return `<div class="año"><h2>${anio}° Nivel</h2>${materias}</div>`;
-    }).join('');
-
-    document.getElementById('materias').innerHTML = `
-      <div class="niveles-grid">
-        ${materiasHTML}
-      </div>`;
-
+    // Detectar si es mobile (ancho <= 700px)
+    const isMobile = window.innerWidth <= 700;
+    let materiasHTML;
+    if (isMobile) {
+      materiasHTML = niveles.map(anio => {
+        const materias = (materiasPorAnio[anio] || []).map(crearMateriaHTML).join('');
+        return `
+          <div class="acordeon-nivel">
+            <button class="acordeon-titulo" aria-expanded="false">${anio}° Nivel</button>
+            <div class="acordeon-contenido" style="display:none;">${materias}</div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('materias').innerHTML = `
+        <div class="acordeon-niveles">
+          ${materiasHTML}
+        </div>`;
+      inicializarAcordeonNiveles();
+    } else {
+      materiasHTML = niveles.map(anio => {
+        const materias = (materiasPorAnio[anio] || []).map(crearMateriaHTML).join('');
+        return `<div class="año"><h2>${anio}° Nivel</h2>${materias}</div>`;
+      }).join('');
+      document.getElementById('materias').innerHTML = `
+        <div class="niveles-grid">
+          ${materiasHTML}
+        </div>`;
+    }
     inicializarSelects();
     await restaurarEstadosLocal();
     actualizarSugerencias();
+// === Inicializar acordeón de niveles ===
+function inicializarAcordeonNiveles() {
+  document.querySelectorAll('.acordeon-titulo').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('.acordeon-titulo').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      document.querySelectorAll('.acordeon-contenido').forEach(c => c.style.display = 'none');
+      if (!expanded) {
+        this.setAttribute('aria-expanded', 'true');
+        this.nextElementSibling.style.display = 'block';
+      }
+    });
+  });
+  // Por defecto, abrir el primer nivel
+  const firstBtn = document.querySelector('.acordeon-titulo');
+  if (firstBtn) {
+    firstBtn.setAttribute('aria-expanded', 'true');
+    firstBtn.nextElementSibling.style.display = 'block';
+  }
+}
 
   } catch (error) {
     console.error('Error cargando correlativas.json:', error);

@@ -1,3 +1,71 @@
+@media (max-width: 400px) {
+  html { font-size: 14px; }
+  .acordeon-niveles { max-width: 100vw; margin: 0; }
+  .acordeon-titulo { font-size: 1em; padding: 10px 6px; }
+  .acordeon-contenido { padding: 8px 4px 6px 4px; }
+  .materia h3 { font-size: 1em; }
+  .materia p, .materia label, .materia .correlativas { font-size: 0.95em; }
+}
+/* Mostrar acordeón solo en mobile, grid en desktop */
+@media (min-width: 701px) {
+  .acordeon-niveles { display: none !important; }
+  .niveles-grid { display: flex; gap: 24px; justify-content: center; }
+  .año { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 18px 16px 12px 16px; min-width: 180px; flex: 1 1 0; }
+  body.dark-mode .año { background: #23232b; box-shadow: 0 2px 8px #0005; }
+  .año h2 { font-size: 1.2em; margin-bottom: 10px; color: #7a1b63; }
+  body.dark-mode .año h2 { color: #ffb347; }
+}
+/* --- Responsive acordeón de niveles --- */
+.acordeon-niveles {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 32px auto;
+}
+.acordeon-nivel {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+body.dark-mode .acordeon-nivel {
+  background: #23232b;
+  box-shadow: 0 2px 8px #0005;
+}
+.acordeon-titulo {
+  width: 100%;
+  text-align: left;
+  background: #7a1b63;
+  color: #fff;
+  border: none;
+  padding: 18px 24px;
+  font-size: 1.25em;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+.acordeon-titulo[aria-expanded="true"] {
+  background: #a23a8e;
+}
+.acordeon-contenido {
+  padding: 18px 24px 12px 24px;
+  background: inherit;
+  animation: fadeInAcordeon 0.3s;
+}
+@keyframes fadeInAcordeon {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 700px) {
+  .acordeon-niveles { max-width: 100%; }
+  .acordeon-titulo { font-size: 1.1em; padding: 14px 12px; }
+  .acordeon-contenido { padding: 12px 10px 8px 10px; }
+}
 /* Colores para correlativas según estado */
 .correlativa-estado { font-weight: bold; transition: color 0.2s; }
 .correlativa-aprobada, .correlativa-promocionada { color: #2e7d32; }
