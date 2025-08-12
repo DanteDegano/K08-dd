@@ -1,3 +1,13 @@
+@media (max-width: 720px) {
+  #darkModeToggle {
+    display: none !important;
+  }
+}
+@media (max-width: 720px) {
+  main {
+    padding: 0 20px;
+  }
+}
 /* Centrar ícono en el botón de modo oscuro */
 #darkModeToggle {
   display: flex;
@@ -47,7 +57,7 @@
 @media (min-width: 721px) {
   .acordeon-niveles { display: none !important; }
   .niveles-grid { display: flex; gap: 24px; justify-content: center; }
-  .año { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 18px 16px 12px 16px; min-width: 180px; flex: 1 1 0; }
+  .año { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 18px 16px 12px 16px;flex: 1 1 0; }
   body.dark-mode .año { background: #23232b; box-shadow: 0 2px 8px #0005; }
   .año h2 { font-size: 1.2em; margin-bottom: 10px; color: #7a1b63; }
   body.dark-mode .año h2 { color: #ffb347; }

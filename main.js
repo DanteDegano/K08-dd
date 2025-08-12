@@ -1,3 +1,25 @@
+// === Long press para modo oscuro en mobile ===
+function inicializarLongPressDarkMode() {
+  let pressTimer;
+  const isMobile = window.innerWidth <= 720;
+  if (!isMobile) return;
+  const target = document.body; // O usar document.querySelector('main') si prefieres
+  target.addEventListener('touchstart', function(e) {
+    pressTimer = setTimeout(() => {
+      // Cambiar modo oscuro
+      const activo = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('modoOscuro', activo);
+      const icono = document.getElementById('darkModeIcon');
+      if (icono) icono.textContent = activo ? '☀️' : '🌙';
+    }, 700); // 700ms para long press
+  });
+  target.addEventListener('touchend', function(e) {
+    clearTimeout(pressTimer);
+  });
+  target.addEventListener('touchmove', function(e) {
+    clearTimeout(pressTimer);
+  });
+}
 // === Carga materias desde correlativas.json ===
 async function cargarMateriasDesdeJSON() {
   try {
@@ -315,6 +337,7 @@ window.addEventListener('DOMContentLoaded', () => {
   cargarMateriasDesdeJSON();
   inicializarSugerenciasBot();
   inicializarModoOscuro();
+  inicializarLongPressDarkMode();
 });
 
 // Redibujar acordeón/grid al cambiar el tamaño de la ventana
