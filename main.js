@@ -308,3 +308,13 @@ window.addEventListener('DOMContentLoaded', () => {
   inicializarSugerenciasBot();
   inicializarModoOscuro();
 });
+
+// Redibujar acordeón/grid al cambiar el tamaño de la ventana
+window.addEventListener('resize', () => {
+  // Evitar recarga excesiva: solo si cambia de mobile a desktop o viceversa
+  const wasMobile = document.querySelector('.acordeon-niveles');
+  const isMobileNow = window.innerWidth <= 720;
+  if ((wasMobile && !isMobileNow) || (!wasMobile && isMobileNow)) {
+    cargarMateriasDesdeJSON();
+  }
+});

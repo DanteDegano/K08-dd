@@ -7,7 +7,7 @@
   .materia p, .materia label, .materia .correlativas { font-size: 0.95em; }
 }
 /* Mostrar acordeón solo en mobile, grid en desktop */
-@media (min-width: 701px) {
+@media (min-width: 721px) {
   .acordeon-niveles { display: none !important; }
   .niveles-grid { display: flex; gap: 24px; justify-content: center; }
   .año { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 18px 16px 12px 16px; min-width: 180px; flex: 1 1 0; }
@@ -61,7 +61,7 @@ body.dark-mode .acordeon-nivel {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: none; }
 }
-@media (max-width: 700px) {
+@media (max-width: 720px) {
   .acordeon-niveles { max-width: 100%; }
   .acordeon-titulo { font-size: 1.1em; padding: 14px 12px; }
   .acordeon-contenido { padding: 12px 10px 8px 10px; }
