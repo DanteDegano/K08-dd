@@ -1,9 +1,70 @@
+/* Colores para correlativas según estado */
+.correlativa-estado { font-weight: bold; transition: color 0.2s; }
+.correlativa-aprobada, .correlativa-promocionada { color: #2e7d32; }
+.correlativa-cursada { color: #f9a825; }
+.correlativa-en-curso { color: #7a1b63; }
+.correlativa-ninguno { color: #888; font-weight: normal; }
+/* Sugerencias Bot estilos */
+.sug-carrera {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #222;
+}
+.sug-carrera span {
+  color: #2e7d32;
+}
+.sug-anotar-titulo, .sug-final-titulo {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #222;
+}
+body.dark-mode .sug-carrera,
+body.dark-mode .sug-anotar-titulo,
+body.dark-mode .sug-final-titulo {
+  color: #fff !important;
+}
+body.dark-mode .sug-carrera span {
+  color: #7fff7f;
+}
+.sug-anotar-list, .sug-final-list {
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding-left: 18px;
+  font-size: 1em;
+}
+.sug-final-list {
+  margin-bottom: 0;
+}
+.sug-materia-nombre {
+  font-weight: 500;
+}
+.sug-materia-nivel {
+  color: #888;
+  font-size: 0.95em;
+}
+/* Fondo del bot de sugerencias adaptado a modo claro y oscuro */
+#sugerencias-bot {
+  background: #fff;
+  color: #222;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 18px 20px 12px 20px;
+  margin-bottom: 18px;
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark-mode #sugerencias-bot {
+  background: #292929 !important;
+  color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
 /* RESET Y BASE */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: Arial, sans-serif;
   background: #f7f7f7;
-  color: #333;
+  color: #333; 
 }
 header {
   background-color: #7a1b63;
@@ -222,18 +283,30 @@ body.dark-mode select.estado-select option {
 body.dark-mode .cor.en-curso { background: #64b5f6; color: #222; }
 body.darkMode .cor.cursada { background: #fbc02d; color: #222; }
 body.dark-mode .cor.aprobada, body.dark-mode .cor.promocionada { background: #00e676; color: #222; }
-body.dark-mode #sugerencias-bot {
-  background: #23202a !important;
-  color: #eee !important;
-  box-shadow: 0 2px 16px #0006;
+#sugerencias-contenido p {
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: #7a1b63;
+  font-size: 1.2em;
 }
-body.dark-mode #sugerencias-bot h2 {
-  color: #e1aaff !important;
+
+#sugerencias-contenido ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1.2em;
+  color: #333;
+  font-size: 1.1em;
 }
-body.dark-mode #sugerencias-bot #toggle-sugerencias {
-  background: #7a1b63 !important;
-  color: #fff !important;
+
+#sugerencias-contenido li {
+  margin-bottom: 0.3em;
 }
-body.dark-mode #sugerencias-bot #sugerencias-contenido {
-  color: #eee !important;
+
+/* Para modo oscuro */
+body.dark-mode #sugerencias-contenido p {
+  color: #e1aaff;
+}
+
+body.dark-mode #sugerencias-contenido ul {
+  color: #ccc;
 }

@@ -168,7 +168,14 @@
     "correlativas_para_final": ["Analisis de sistemas", "ingenieria y sociedad"]
   },
   {
-    "nombre": "Electiva I",
+    "nombre": "Experiencia de Usuario y Accesibilidad",
+    "anio": 3,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+    {
+    "nombre": "Gestión del Talento Humano",
     "anio": 3,
     "correlativas_para_cursar_aprobadas": [],
     "correlativas_para_cursar_cursadas": [],
@@ -224,7 +231,7 @@
     "correlativas_para_final": [["Probabilidad y Estadística", "Matematica Superior"]]
   },
   {
-    "nombre": "Electiva II",
+    "nombre": "Administración Estratégica del Capital Humano",
     "anio": 4,
     "correlativas_para_cursar_aprobadas": [],
     "correlativas_para_cursar_cursadas": [],
@@ -259,7 +266,28 @@
     "correlativas_para_final": ["Todas las materias aprobadas"]
   },
   {
+    "nombre": "Electiva I",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Electiva II",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
     "nombre": "Electiva III",
+    "anio": 5,
+    "correlativas_para_cursar_aprobadas": [],
+    "correlativas_para_cursar_cursadas": [],
+    "correlativas_para_final": []
+  },
+  {
+    "nombre": "Electiva IV",
     "anio": 5,
     "correlativas_para_cursar_aprobadas": [],
     "correlativas_para_cursar_cursadas": [],

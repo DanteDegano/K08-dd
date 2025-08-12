@@ -1,58 +1,34 @@
-// === USUARIO ===
-let userId = localStorage.getItem('userId');
-if (!userId) {
-  userId = prompt('Ingresá un nombre de usuario único para guardar tu avance:');
-  localStorage.setItem('userId', userId);
-}
+// === Carga materias desde correlativas.json ===
+async function cargarMateriasDesdeJSON() {
+  try {
+    const res = await fetch('correlativas.json');
+    const data = await res.json();
 
-// === FUNCIONES DE ESTADO ===
-async function guardarEstadosEnFirestore() {
-  const estados = {};
-  document.querySelectorAll('.materia').forEach(m => {
-    const nombre = m.getAttribute('data-nombre');
-    const estado = m.querySelector('.estado-select')?.value || 'ninguno';
-    estados[nombre] = estado;
-  });
-  await db.collection('usuarios').doc(userId).set({ estados });
-}
-
-async function restaurarEstadosDesdeFirestore() {
-  const doc = await db.collection('usuarios').doc(userId).get();
-  if (doc.exists) {
-    const estados = doc.data().estados || {};
-    document.querySelectorAll('.materia').forEach(m => {
-      const nombre = m.getAttribute('data-nombre');
-      const estado = estados[nombre];
-      const select = m.querySelector('.estado-select');
-      if (estado && select) {
-        select.value = estado;
-        actualizarClaseMateria(m, estado);
-      }
+    const materiasPorAnio = {};
+    data.forEach(m => {
+      const anio = m.anio || 'Sin año';
+      if (!materiasPorAnio[anio]) materiasPorAnio[anio] = [];
+      materiasPorAnio[anio].push(m);
     });
-  }
-}
 
-// === FUNCIONES DE MATERIAS ===
-function actualizarClaseMateria(materia, estado) {
-  console.log('actualizarClaseMateria:', materia, estado);
-  const estados = ['en-curso', 'aprobada', 'cursada', 'promocionada', 'bloqueada'];
-  materia.classList.remove(...estados);
-  materia.querySelector('.estado-select').className = 'estado-select ' + estado;
-  if (estado !== 'ninguno') {
-    materia.classList.add(estado);
-    console.log('Clase agregada:', estado);
-  }
-}
+    const niveles = [1, 2, 3, 4, 5];
+    const materiasHTML = niveles.map(anio => {
+      const materias = (materiasPorAnio[anio] || []).map(crearMateriaHTML).join('');
+      return `<div class="año"><h2>${anio}° Nivel</h2>${materias}</div>`;
+    }).join('');
 
-function inicializarSelects() {
-  document.querySelectorAll('.estado-select').forEach(select => {
-    select.addEventListener('change', async () => {
-      const materia = select.closest('.materia');
-      actualizarClaseMateria(materia, select.value);
-      if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
-      await guardarEstadosEnFirestore();
-    });
-  });
+    document.getElementById('materias').innerHTML = `
+      <div class="niveles-grid">
+        ${materiasHTML}
+      </div>`;
+
+    inicializarSelects();
+    await restaurarEstadosLocal();
+    actualizarSugerencias();
+
+  } catch (error) {
+    console.error('Error cargando correlativas.json:', error);
+  }
 }
 
 function crearMateriaHTML(m) {
@@ -88,77 +64,168 @@ function crearMateriaHTML(m) {
   `;
 }
 
-function cargarMateriasDesdeJSON() {
-  fetch('correlativas.json')
-    .then(res => res.json())
-    .then(data => {
-      const materiasPorAnio = {};
-      data.forEach(m => {
-        const anio = m.anio || 'Sin año';
-        if (!materiasPorAnio[anio]) materiasPorAnio[anio] = [];
-        materiasPorAnio[anio].push(m);
-      });
-      const niveles = [1, 2, 3, 4, 5];
-      const materiasHTML = niveles.map(anio => {
-        const materias = (materiasPorAnio[anio] || []).map(crearMateriaHTML).join('');
-        return `<div class="año"><h2>${anio}° Nivel</h2>${materias}</div>`;
-      }).join('');
-      document.getElementById('materias').innerHTML = `
-        <div class="niveles-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;">
-          ${materiasHTML}
-        </div>`;
-      inicializarSelects();
-      restaurarEstadosDesdeFirestore().then(() => {
-        if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
-      });
-    });
+// === Guardar y restaurar estados ===
+async function guardarEstadosLocal() {
+  const estados = {};
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const estado = m.querySelector('.estado-select')?.value || 'ninguno';
+    estados[nombre] = estado;
+  });
+  localStorage.setItem('estados', JSON.stringify(estados));
 }
 
-
-// === MODO OSCURO ===
-function setDarkModeButton() {
-  const btn = document.getElementById('darkModeToggle');
-  const icon = document.getElementById('darkModeIcon');
-  const text = document.getElementById('darkModeText');
-  btn.querySelectorAll('.star').forEach(e => e.remove());
-
-  if (document.body.classList.contains('dark-mode')) {
-    icon.textContent = '🌙';
-    text.textContent = 'Modo Oscuro';
-    btn.classList.add('luna');
-    btn.classList.remove('sol');
-    for (let i = 0; i < 18; i++) {
-      const star = document.createElement('span');
-      star.className = 'star';
-      const size = Math.random() * 2.5 + 1.5;
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      star.style.left = `${Math.random() * 95}%`;
-      star.style.top = `${Math.random() * 80}%`;
-      star.style.animationDelay = `${Math.random() * 2}s`;
-      btn.appendChild(star);
+async function restaurarEstadosLocal() {
+  const estados = JSON.parse(localStorage.getItem('estados') || '{}');
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const estado = estados[nombre];
+    const select = m.querySelector('.estado-select');
+    if (estado && select) {
+      select.value = estado;
+      actualizarClaseMateria(m, estado);
     }
-  } else {
-    icon.textContent = '☀️';
-    text.textContent = 'Modo Claro';
-    btn.classList.add('sol');
-    btn.classList.remove('luna');
+  });
+}
+
+function actualizarClaseMateria(materia, estado) {
+  const estados = ['en-curso', 'aprobada', 'cursada', 'promocionada', 'bloqueada'];
+  materia.classList.remove(...estados);
+  const select = materia.querySelector('.estado-select');
+  if (select) {
+    select.className = 'estado-select ' + estado;
+  }
+  if (estado !== 'ninguno') {
+    materia.classList.add(estado);
   }
 }
 
-function inicializarModoOscuro() {
-  const btn = document.getElementById('darkModeToggle');
-  btn.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    setDarkModeButton();
-    if (typeof actualizarResaltadoYColores === 'function') actualizarResaltadoYColores();
+// === Sugerencias ===
+function actualizarSugerencias() {
+  const estados = {};
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const estado = m.querySelector('.estado-select')?.value || 'ninguno';
+    estados[nombre] = estado;
   });
-  setDarkModeButton();
+
+  // Función para obtener el porcentaje de carrera según el estado
+  function obtenerPorcentaje(estado) {
+    if (estado === 'aprobada' || estado === 'promocionada') return 100;
+    if (estado === 'cursada') return 50;
+    return 0;
+  }
+
+  // Calcular porcentaje total de carrera completada
+  const materias = document.querySelectorAll('.materia');
+  let suma = 0;
+  materias.forEach(m => {
+    const estado = m.querySelector('.estado-select')?.value || 'ninguno';
+    suma += obtenerPorcentaje(estado);
+  });
+  const porcentajeCarrera = materias.length > 0 ? Math.round(suma / materias.length) : 0;
+
+  function correlativasCumplidas(materia, tipo) {
+    const aprobadasReq = JSON.parse(materia.getAttribute('data-correlativas-para-cursar-aprobadas') || '[]');
+    const cursadasReq = JSON.parse(materia.getAttribute('data-correlativas-para-cursar-cursadas') || '[]');
+    const finalReq = JSON.parse(materia.getAttribute('data-correlativas-para-final') || '[]');
+
+    if (tipo === 'cursar_aprobadas') {
+      return aprobadasReq.every(req => ['aprobada', 'promocionada'].includes(estados[req]));
+    }
+    if (tipo === 'cursar_cursadas') {
+      return cursadasReq.every(req => ['cursada'].includes(estados[req]));
+    }
+    if (tipo === 'final') {
+      return finalReq.every(req => ['aprobada', 'promocionada'].includes(estados[req]));
+    }
+    return false;
+  }
+
+  // Recolectar materias con su nivel para priorizar
+  const paraAnotar = [];
+  const paraRendirFinal = [];
+  const materiasNivel = {};
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const nivel = m.closest('.año')?.querySelector('h2')?.textContent?.match(/(\d+)/)?.[1] || '99';
+    materiasNivel[nombre] = parseInt(nivel, 10);
+  });
+
+  document.querySelectorAll('.materia').forEach(m => {
+    const nombre = m.getAttribute('data-nombre');
+    const estado = estados[nombre];
+
+    if (!['cursada', 'aprobada', 'promocionada', 'en-curso'].includes(estado)) {
+      // Requisitos: todas las correlativas aprobadas/promocionadas Y todas las cursadas
+      const aprobadasReq = JSON.parse(m.getAttribute('data-correlativas-para-cursar-aprobadas') || '[]');
+      const cursadasReq = JSON.parse(m.getAttribute('data-correlativas-para-cursar-cursadas') || '[]');
+      const cumpleAprobadas = aprobadasReq.every(req => ['aprobada', 'promocionada'].includes(estados[req]));
+      const cumpleCursadas = cursadasReq.every(req => ['cursada'].includes(estados[req]));
+      if (cumpleAprobadas && cumpleCursadas) {
+        paraAnotar.push({ nombre, nivel: materiasNivel[nombre] });
+        m.classList.add('disponible-cursar');
+      } else {
+        m.classList.remove('disponible-cursar');
+      }
+    }
+
+    // Solo materias con estado 'cursada' pueden rendir final
+    if (estado === 'cursada') {
+      if (correlativasCumplidas(m, 'final')) {
+        paraRendirFinal.push(nombre);
+      }
+    }
+  });
+
+  // Ordenar y limitar materias para anotar (máximo 3, menor nivel primero)
+  paraAnotar.sort((a, b) => a.nivel - b.nivel);
+  const paraAnotarLimit = paraAnotar.slice(0, 3);
+
+  const contenido = document.getElementById('sugerencias-contenido');
+  // Diseño visual con HTML
+  let html = '';
+  html += `<div class="sug-carrera">Carrera completada: <span>${porcentajeCarrera}%</span></div>`;
+
+  if (paraAnotarLimit.length === 0) {
+    html += '<div style="margin-bottom:10px;">No hay materias recomendadas para anotarte por ahora.</div>';
+  } else {
+    html += '<div class="sug-anotar-titulo">Podés anotarte a cursar estas materias:</div>';
+    html += '<ul class="sug-anotar-list">';
+    paraAnotarLimit.forEach(obj => {
+      html += `<li><span class='sug-materia-nombre'>${obj.nombre}</span> <span class='sug-materia-nivel'>(Nivel ${obj.nivel})</span></li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (paraRendirFinal.length === 0) {
+    html += '<div>No hay finales recomendados para rendir por ahora.</div>';
+  } else {
+    html += '<div class="sug-final-titulo">Podés rendir el final de estas materias:</div>';
+    html += '<ul class="sug-final-list">';
+    paraRendirFinal.forEach(nombre => {
+      html += `<li><span class='sug-materia-nombre'>${nombre}</span></li>`;
+    });
+    html += '</ul>';
+  }
+
+  contenido.innerHTML = html;
 }
 
-// === TOGGLE DE SUGERENCIAS ===
+// === Selects ===
+function inicializarSelects() {
+  document.querySelectorAll('.estado-select').forEach(select => {
+    select.addEventListener('change', async () => {
+      const materia = select.closest('.materia');
+      actualizarClaseMateria(materia, select.value);
+      actualizarSugerencias();
+      await guardarEstadosLocal();
+    });
+  });
+}
+
+// === Sugerencias Bot Mostrar/Ocultar ===
 function inicializarSugerenciasBot() {
-  const aside = document.getElementById('sugerencias-bot');
   const btn = document.getElementById('toggle-sugerencias');
   const contenido = document.getElementById('sugerencias-contenido');
   let visible = true;
@@ -176,9 +243,29 @@ function inicializarSugerenciasBot() {
   contenido.style.opacity = '1';
 }
 
-// === INICIALIZACIÓN GLOBAL ===
+// === Modo Oscuro ===
+function inicializarModoOscuro() {
+  const boton = document.getElementById('darkModeToggle');
+
+  const estadoInicial = localStorage.getItem('modoOscuro') === 'true';
+  if (estadoInicial) {
+    document.body.classList.add('dark-mode');
+    boton.classList.add('luna');
+  } else {
+    boton.classList.add('sol');
+  }
+
+  boton.addEventListener('click', () => {
+    const activo = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('modoOscuro', activo);
+    boton.classList.toggle('luna', activo);
+    boton.classList.toggle('sol', !activo);
+  });
+}
+
+// === Inicio ===
 window.addEventListener('DOMContentLoaded', () => {
-  inicializarModoOscuro();
-  inicializarSugerenciasBot();
   cargarMateriasDesdeJSON();
+  inicializarSugerenciasBot();
+  inicializarModoOscuro();
 });
