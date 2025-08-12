@@ -332,6 +332,103 @@ function inicializarModoOscuro() {
   });
 }
 
+// === Login con Google y manejo de usuario ===
+function inicializarLoginGoogle() {
+  // Crear overlay blureado
+  let overlay = document.getElementById('login-blur-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'login-blur-overlay';
+    overlay.style = `
+      position: fixed; z-index: 9999; inset: 0; background: rgba(0,0,0,0.25); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;`;
+    document.body.appendChild(overlay);
+  }
+  // Crear popup
+  let popup = document.getElementById('login-google-popup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'login-google-popup';
+    popup.style = `
+      background: #fff; border-radius: 18px; box-shadow: 0 4px 32px #0005; padding: 38px 32px 32px 32px; min-width: 280px; max-width: 90vw;
+      display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative;`;
+    popup.innerHTML = `
+      <h2 style='margin-bottom:10px;font-size:1.3em;color:#7a1b63;'>Iniciar sesión</h2>
+      <button id="login-google-btn" style="background:#fff;color:#222;border:1px solid #ccc;padding:12px 28px;border-radius:8px;font-size:1.1em;display:flex;align-items:center;gap:10px;cursor:pointer;"><img src='https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg' style='width:24px;height:24px;'> Iniciar sesión con Google</button>
+    `;
+    overlay.appendChild(popup);
+  }
+  document.getElementById('login-google-btn').onclick = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await firebase.auth().signInWithPopup(provider);
+    } catch (e) {
+      alert('Error al iniciar sesión: ' + e.message);
+    }
+  };
+}
+
+function cerrarLoginGooglePopup() {
+  const overlay = document.getElementById('login-blur-overlay');
+  if (overlay) overlay.remove();
+}
+
+function mostrarLogout(nombre) {
+  let logoutDiv = document.getElementById('logout-google-box');
+  if (!logoutDiv) {
+    logoutDiv = document.createElement('div');
+    logoutDiv.id = 'logout-google-box';
+    logoutDiv.style = 'display:flex;justify-content:center;align-items:center;margin:30px 0;gap:16px;';
+    logoutDiv.innerHTML = `<span style='font-size:1.1em;'>👤 ${nombre}</span><button id="logout-google-btn" style="background:#7a1b63;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>`;
+    document.body.prepend(logoutDiv);
+  }
+  document.getElementById('logout-google-btn').onclick = async () => {
+    await firebase.auth().signOut();
+    location.reload();
+  };
+}
+
+// === Guardar y cargar estados en Firestore ===
+async function guardarEstadosFirestore(uid, estados) {
+  await db.collection('usuarios').doc(uid).set({ estados });
+}
+
+async function cargarEstadosFirestore(uid) {
+  const doc = await db.collection('usuarios').doc(uid).get();
+  return doc.exists ? doc.data().estados : null;
+}
+
+// === Integración con el flujo principal ===
+firebase.auth().onAuthStateChanged(async user => {
+  const overlay = document.getElementById('login-blur-overlay');
+  const logoutDiv = document.getElementById('logout-google-box');
+  if (user) {
+    if (overlay) overlay.remove();
+    mostrarLogout(user.displayName || user.email);
+    // Cargar estados del usuario
+    const estados = await cargarEstadosFirestore(user.uid);
+    if (estados) {
+      localStorage.setItem('estados', JSON.stringify(estados));
+    }
+    await restaurarEstadosLocal();
+    actualizarSugerencias();
+    // Guardar automáticamente en Firestore al cambiar estados
+    document.querySelectorAll('.estado-select').forEach(select => {
+      select.addEventListener('change', async () => {
+        const nuevosEstados = JSON.parse(localStorage.getItem('estados') || '{}');
+        await guardarEstadosFirestore(user.uid, nuevosEstados);
+      });
+    });
+  } else {
+    if (logoutDiv) logoutDiv.remove();
+    inicializarLoginGoogle();
+    // Limpiar estados locales
+    localStorage.removeItem('estados');
+    await restaurarEstadosLocal();
+    actualizarSugerencias();
+  }
+});
+
 // === Inicio ===
 window.addEventListener('DOMContentLoaded', () => {
   cargarMateriasDesdeJSON();
