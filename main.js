@@ -398,6 +398,46 @@ async function cargarEstadosFirestore(uid) {
   return doc.exists ? doc.data().estados : null;
 }
 
+// === Sincronización en tiempo real de estados con Firestore ===
+let unsubscribeEstados = null;
+
+firebase.auth().onAuthStateChanged(async user => {
+  const overlay = document.getElementById('login-blur-overlay');
+  const logoutDiv = document.getElementById('logout-google-box');
+  if (unsubscribeEstados) { unsubscribeEstados(); unsubscribeEstados = null; }
+  if (user) {
+    if (overlay) overlay.remove();
+    mostrarLogout(user.displayName || user.email);
+    // Escuchar en tiempo real los cambios de estados
+    unsubscribeEstados = db.collection('usuarios').doc(user.uid)
+      .onSnapshot(doc => {
+        const estados = doc.exists ? doc.data().estados : null;
+        if (estados) {
+          localStorage.setItem('estados', JSON.stringify(estados));
+        } else {
+          localStorage.removeItem('estados');
+        }
+        restaurarEstadosLocal();
+        actualizarSugerencias();
+      });
+    // Guardar automáticamente en Firestore al cambiar estados
+    document.querySelectorAll('.estado-select').forEach(select => {
+      select.addEventListener('change', async () => {
+        const nuevosEstados = JSON.parse(localStorage.getItem('estados') || '{}');
+        await guardarEstadosFirestore(user.uid, nuevosEstados);
+      });
+    });
+  } else {
+    if (logoutDiv) logoutDiv.remove();
+    if (unsubscribeEstados) { unsubscribeEstados(); unsubscribeEstados = null; }
+    inicializarLoginGoogle();
+    // Limpiar estados locales
+    localStorage.removeItem('estados');
+    await restaurarEstadosLocal();
+    actualizarSugerencias();
+  }
+});
+
 // === Integración con el flujo principal ===
 firebase.auth().onAuthStateChanged(async user => {
   const overlay = document.getElementById('login-blur-overlay');
