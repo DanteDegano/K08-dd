@@ -336,7 +336,16 @@ function inicializarModoOscuro() {
 window.addEventListener('DOMContentLoaded', () => {
   cargarMateriasDesdeJSON();
   inicializarSugerenciasBot();
-  inicializarModoOscuro();
+  if (window.innerWidth > 720) {
+    // Agregar botón de modo oscuro solo en desktop
+    const header = document.querySelector('header');
+    const btn = document.createElement('button');
+    btn.id = 'darkModeToggle';
+    btn.className = 'extravagant';
+    btn.innerHTML = '<span id="darkModeIcon">🌙</span>';
+    header.appendChild(btn);
+    inicializarModoOscuro();
+  }
   inicializarLongPressDarkMode();
 });
 
