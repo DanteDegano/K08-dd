@@ -295,8 +295,8 @@ function inicializarSelects() {
 function inicializarSugerenciasBot() {
   const btn = document.getElementById('toggle-sugerencias');
   const contenido = document.getElementById('sugerencias-contenido');
-  // Si es mobile, iniciar oculto; si no, visible
-  let visible = window.innerWidth > 720;
+  // Siempre iniciar cerrado
+  let visible = false;
 
   btn.addEventListener('click', () => {
     visible = !visible;
@@ -307,10 +307,10 @@ function inicializarSugerenciasBot() {
   });
 
   contenido.style.transition = 'max-height 0.3s, opacity 0.3s';
-  contenido.style.maxHeight = visible ? '420px' : '0';
-  contenido.style.opacity = visible ? '1' : '0';
-  contenido.style.pointerEvents = visible ? '' : 'none';
-  btn.textContent = visible ? 'Ocultar' : 'Mostrar';
+  contenido.style.maxHeight = '0';
+  contenido.style.opacity = '0';
+  contenido.style.pointerEvents = 'none';
+  btn.textContent = 'Mostrar';
 }
 
 // === Modo Oscuro ===
@@ -330,6 +330,44 @@ function inicializarModoOscuro() {
     localStorage.setItem('modoOscuro', activo);
     icono.textContent = activo ? '☀️' : '🌙';
   });
+}
+
+// Mejorar el estilo del botón de modo oscuro para íconos circulares y tamaño 60x60
+if (!document.getElementById('darkmode-fix-style')) {
+  const style = document.createElement('style');
+  style.id = 'darkmode-fix-style';
+  style.innerHTML = `
+    #darkModeToggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      padding: 0;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px #0002;
+      transition: background 0.2s;
+    }
+    #darkModeToggle:hover {
+      background: #f3e6f3;
+    }
+    #darkModeIcon {
+      font-size: 2em;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: none;
+      margin: 0;
+      padding: 0;
+      padding-left: 7px;
+      padding-bottom: 7px;
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // === Login con Google y manejo de usuario ===
@@ -361,9 +399,11 @@ function inicializarLoginGoogle() {
   document.getElementById('login-google-btn').onclick = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
+      mostrarLoadingUTN();
       await firebase.auth().signInWithPopup(provider);
     } catch (e) {
       alert('Error al iniciar sesión: ' + e.message);
+      if (document.getElementById('loading-overlay')) document.getElementById('loading-overlay').remove();
     }
   };
 }
@@ -382,26 +422,67 @@ function mostrarLogout(nombre) {
   let logoutDiv = document.createElement('div');
   logoutDiv.id = 'logout-google-box';
   logoutDiv.style = 'display:flex;justify-content:flex-end;align-items:center;gap:16px;';
-  logoutDiv.innerHTML = `<span style='font-size:1.1em;'>${nombre}</span>
+  logoutDiv.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+      <span style='font-size:1em;color:#fff;'>${nombre}</span>
+      <span style='font-size:0.95em;color:#ffffff;'>${firebase.auth().currentUser?.email || ''}</span>
+    </div>
     <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#1b7a4a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>
     <button id="logout-google-btn" style="background:#7a1b63;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>`;
-  // Hover visual para el botón guardar cambios
-  const style = document.createElement('style');
-  style.innerHTML = `
-    .hover-guardar-btn:hover { background: #218c5a !important; }
-    .hover-guardar-btn.clicked {
-      background: #43b97b !important;
-      transform: scale(0.96);
-      transition: background 0.2s, transform 0.1s;
-    }
-  `;
-  document.head.appendChild(style);
+  // Hover visual y feedback para el botón guardar cambios
+  if (!document.getElementById('toast-style')) {
+    const style = document.createElement('style');
+    style.id = 'toast-style';
+    style.innerHTML = `
+      .hover-guardar-btn:hover { background: #218c5a !important; }
+      .hover-guardar-btn.clicked {
+        background: #43b97b !important;
+        transform: scale(0.96);
+        transition: background 0.2s, transform 0.1s;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        padding: 14px 32px;
+        border-radius: 8px;
+        font-size: 1.1em;
+        box-shadow: 0 2px 16px #0003;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 99999;
+        transition: opacity 0.3s;
+      }
+      .toast.show { opacity: 1; pointer-events: auto; }
+      @media (max-width: 720px) {
+        .toast { font-size: 1em; padding: 10px 16px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  if (!document.getElementById('toast-container')) {
+    const toast = document.createElement('div');
+    toast.id = 'toast-container';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  function showToast(msg, success = true) {
+    const toast = document.getElementById('toast-container');
+    toast.textContent = msg;
+    toast.style.background = success ? '#1b7a4a' : '#b71c1c';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
   header.appendChild(logoutDiv);
   const guardarBtn = document.getElementById('guardar-cambios-btn');
   guardarBtn.onclick = null;
   guardarBtn.addEventListener('click', async () => {
     // Feedback visual inmediato
     guardarBtn.classList.add('clicked');
+    guardarBtn.disabled = true;
     setTimeout(() => guardarBtn.classList.remove('clicked'), 180);
     const user = firebase.auth().currentUser;
     if (user) {
@@ -423,42 +504,29 @@ function mostrarLogout(nombre) {
       try {
         await db.collection('usuarios').doc(user.uid).set(datosUsuario);
         console.log('Datos guardados correctamente en Firestore');
-        alert('Cambios guardados en la nube');
+        showToast('Cambios guardados correctamente', true);
       } catch (e) {
         console.error('Error en el guardado de datos:', e);
-        alert('Error en el guardado de datos');
+        showToast('Error al guardar los datos', false);
       }
     } else {
-      alert('Debes iniciar sesión para guardar tus cambios.');
+      showToast('Debes iniciar sesión para guardar tus cambios.', false);
     }
+    setTimeout(() => { guardarBtn.disabled = false; }, 1200);
   });
   const logoutBtn = document.getElementById('logout-google-btn');
   logoutBtn.onclick = null;
   logoutBtn.addEventListener('click', async () => {
-    console.log('Botón cerrar sesión clickeado');
     try {
-      // Bandera global para evitar triggers de guardado
       window.isLoggingOut = true;
-      // Deshabilitar selects para evitar cambios durante logout
       document.querySelectorAll('.estado-select').forEach(select => {
         select.disabled = true;
       });
-
-      const user = firebase.auth().currentUser;
-      if (user) {
-        // Guardar estados en Firestore antes de cerrar sesión
-        const estados = JSON.parse(localStorage.getItem('estados') || '{}');
-        await guardarEstadosFirestore(user.uid, estados);
-        console.log('Estados guardados en Firestore antes de logout');
-      }
-  // (Sin listeners en tiempo real, nada que cancelar)
-      // Cerrar sesión
       await firebase.auth().signOut();
-      alert('Sesión cerrada correctamente');
       location.reload();
     } catch (e) {
-      alert('Error al cerrar sesión: ' + e.message);
       console.error('Error al cerrar sesión:', e);
+      showToast('Error al cerrar sesión', false);
     }
   });
 }
@@ -515,10 +583,52 @@ firebase.auth().onAuthStateChanged(async user => {
   }
 });
 
-
 // === Inicio ===
-window.addEventListener('DOMContentLoaded', () => {
-  cargarMateriasDesdeJSON();
+window.addEventListener('DOMContentLoaded', async () => {
+  mostrarLoadingUTN();
+  // Esperar login y datos si hay usuario
+  await new Promise(resolve => {
+    firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        const start = Date.now();
+        await cargarMateriasDesdeJSON();
+        mostrarLogout(user.displayName || user.email);
+        const doc = await db.collection('usuarios').doc(user.uid).get();
+        let materias = doc.exists && doc.data().materias ? doc.data().materias : [];
+        document.querySelectorAll('.materia').forEach(m => {
+          const nombre = m.getAttribute('data-nombre');
+          const select = m.querySelector('.estado-select');
+          if (!select) return;
+          const materiaGuardada = materias.find(mat => mat.nombre === nombre);
+          if (materiaGuardada) {
+            select.value = materiaGuardada.estado;
+            actualizarClaseMateria(m, materiaGuardada.estado);
+          } else {
+            select.value = '';
+            actualizarClaseMateria(m, 'ninguno');
+          }
+        });
+        actualizarSugerencias();
+        document.querySelectorAll('.estado-select').forEach(select => { select.disabled = false; });
+        // Esperar al menos 2 segundos para UX
+        const elapsed = Date.now() - start;
+        const minWait = 2000;
+        if (elapsed < minWait) {
+          setTimeout(() => {
+            if (document.getElementById('loading-overlay')) document.getElementById('loading-overlay').remove();
+            resolve();
+          }, minWait - elapsed);
+        } else {
+          if (document.getElementById('loading-overlay')) document.getElementById('loading-overlay').remove();
+          resolve();
+        }
+      } else {
+        await cargarMateriasDesdeJSON();
+        if (document.getElementById('loading-overlay')) document.getElementById('loading-overlay').remove();
+        resolve();
+      }
+    });
+  });
   inicializarSugerenciasBot();
   if (window.innerWidth > 720) {
     // Agregar botón de modo oscuro solo en desktop
@@ -542,3 +652,36 @@ window.addEventListener('resize', () => {
     cargarMateriasDesdeJSON();
   }
 });
+
+function mostrarLoadingUTN() {
+  if (document.getElementById('loading-overlay')) return;
+  let overlay = document.createElement('div');
+  overlay.id = 'loading-overlay';
+  overlay.style = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff9;z-index:99999;display:flex;align-items:center;justify-content:center;font-size:1.5em;color:#333;flex-direction:column;gap:18px;';
+  overlay.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+      <div class="utn-logo-spinner">
+        <svg width="90" height="106" viewBox="0 0 595.3 699.4" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="m246.6 0h102v190.8c80.8-22.4 140.4-96.7 140.4-184.4h106.3c0 146.5-106.8 268.9-246.6 293.2v4.4h233.9v104.2h-214.4c130 31.8 227 149.5 227 289.1h-106.2c0-87.7-59.6-162-140.3-184.4v186.5h-102v-186.5c-80.7 22.4-140.3 96.7-140.3 184.4h-106.4c0-139.6 97-257.3 227-289.1h-214.2v-104.2h233.9v-4.4c-139.9-24.3-246.7-146.7-246.7-293.2h106.3c0 87.7 59.6 162 140.3 184.4z" fill="#222" fill-rule="evenodd"/>
+        </svg>
+      </div>
+      <div id="loading-text">Cargando tus materias...</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  if (!document.getElementById('utn-logo-style')) {
+    const style = document.createElement('style');
+    style.id = 'utn-logo-style';
+    style.innerHTML = `
+      .utn-logo-spinner svg {
+        animation: utn-spin 1.2s linear infinite;
+        display: block;
+      }
+      @keyframes utn-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
