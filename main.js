@@ -425,7 +425,7 @@ function mostrarLogout(nombre) {
   logoutDiv.innerHTML = `
     <div class="user-info" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
       <span style='font-size:1em;color:#ffffff;'>${nombre}</span>
-      <span class="user-email" style='font-size:0.95em;color:#666;'>${firebase.auth().currentUser?.email || ''}</span>
+      <span class="user-email" style='font-size:0.95em;color:#FFFFFF;'>${firebase.auth().currentUser?.email || ''}</span>
     </div>
     <div class="logout-btns" style="display:flex;gap:8px;">
       <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#52023f;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>

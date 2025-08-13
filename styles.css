@@ -385,12 +385,7 @@ body.dark-mode .materia.cursada { background: #665c1e !important; border-left-co
 body.dark-mode .materia.aprobada { background: #1b3d2f !important; border-left-color: #81c784 !important; }
 body.dark-mode .materia.promocionada { background: #1e3a2b !important; border-left-color: #00e676 !important; }
 body.dark-mode .materia.bloqueada { filter: grayscale(1) !important; opacity: 0.5 !important; }
-body.dark-mode .materia.disponible-cursar {
-  border: 2.5px solid #81c784 !important;
-  border-left-width: 8px !important;
-  background: #1e3d29 !important;
-  box-shadow: 0 0 0 2px #388e3c inset !important;
-}
+
 body.dark-mode select.estado-select {
   background: #222;
   color: #eee;
