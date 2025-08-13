@@ -374,22 +374,98 @@ function cerrarLoginGooglePopup() {
 }
 
 function mostrarLogout(nombre) {
-  let logoutDiv = document.getElementById('logout-google-box');
-  if (!logoutDiv) {
-    logoutDiv = document.createElement('div');
-    logoutDiv.id = 'logout-google-box';
-    logoutDiv.style = 'display:flex;justify-content:center;align-items:center;margin:30px 0;gap:16px;';
-    logoutDiv.innerHTML = `<span style='font-size:1.1em;'>👤 ${nombre}</span><button id="logout-google-btn" style="background:#7a1b63;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>`;
-    document.body.prepend(logoutDiv);
-  }
-  document.getElementById('logout-google-btn').onclick = async () => {
-    await firebase.auth().signOut();
-    location.reload();
-  };
+  // Eliminar cualquier logoutDiv anterior
+  const oldLogoutDiv = document.getElementById('logout-google-box');
+  if (oldLogoutDiv) oldLogoutDiv.remove();
+  // Buscar el header y agregar los botones ahí
+  const header = document.querySelector('header');
+  let logoutDiv = document.createElement('div');
+  logoutDiv.id = 'logout-google-box';
+  logoutDiv.style = 'display:flex;justify-content:flex-end;align-items:center;gap:16px;';
+  logoutDiv.innerHTML = `<span style='font-size:1.1em;'>👤 ${nombre}</span>
+    <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#1b7a4a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>
+    <button id="logout-google-btn" style="background:#7a1b63;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>`;
+  // Hover visual para el botón guardar cambios
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .hover-guardar-btn:hover { background: #218c5a !important; }
+    .hover-guardar-btn.clicked {
+      background: #43b97b !important;
+      transform: scale(0.96);
+      transition: background 0.2s, transform 0.1s;
+    }
+  `;
+  document.head.appendChild(style);
+  header.appendChild(logoutDiv);
+  const guardarBtn = document.getElementById('guardar-cambios-btn');
+  guardarBtn.onclick = null;
+  guardarBtn.addEventListener('click', async () => {
+    // Feedback visual inmediato
+    guardarBtn.classList.add('clicked');
+    setTimeout(() => guardarBtn.classList.remove('clicked'), 180);
+    const user = firebase.auth().currentUser;
+    if (user) {
+      // Construir array de materias con nombre y estado (solo si tiene estado válido)
+      const materias = [];
+      document.querySelectorAll('.materia').forEach(m => {
+        const select = m.querySelector('.estado-select');
+        if (!select) return;
+        const estado = select.value;
+        if (!estado || estado === 'ninguno') return;
+        const nombreMateria = m.getAttribute('data-nombre');
+        materias.push({ nombre: nombreMateria, estado });
+      });
+      const datosUsuario = {
+        nombre: user.displayName || '',
+        email: user.email || '',
+        materias
+      };
+      try {
+        await db.collection('usuarios').doc(user.uid).set(datosUsuario);
+        console.log('Datos guardados correctamente en Firestore');
+        alert('Cambios guardados en la nube');
+      } catch (e) {
+        console.error('Error en el guardado de datos:', e);
+        alert('Error en el guardado de datos');
+      }
+    } else {
+      alert('Debes iniciar sesión para guardar tus cambios.');
+    }
+  });
+  const logoutBtn = document.getElementById('logout-google-btn');
+  logoutBtn.onclick = null;
+  logoutBtn.addEventListener('click', async () => {
+    console.log('Botón cerrar sesión clickeado');
+    try {
+      // Bandera global para evitar triggers de guardado
+      window.isLoggingOut = true;
+      // Deshabilitar selects para evitar cambios durante logout
+      document.querySelectorAll('.estado-select').forEach(select => {
+        select.disabled = true;
+      });
+
+      const user = firebase.auth().currentUser;
+      if (user) {
+        // Guardar estados en Firestore antes de cerrar sesión
+        const estados = JSON.parse(localStorage.getItem('estados') || '{}');
+        await guardarEstadosFirestore(user.uid, estados);
+        console.log('Estados guardados en Firestore antes de logout');
+      }
+  // (Sin listeners en tiempo real, nada que cancelar)
+      // Cerrar sesión
+      await firebase.auth().signOut();
+      alert('Sesión cerrada correctamente');
+      location.reload();
+    } catch (e) {
+      alert('Error al cerrar sesión: ' + e.message);
+      console.error('Error al cerrar sesión:', e);
+    }
+  });
 }
 
 // === Guardar y cargar estados en Firestore ===
 async function guardarEstadosFirestore(uid, estados) {
+  if (window.isLoggingOut) return; // No guardar si está en logout
   await db.collection('usuarios').doc(uid).set({ estados });
 }
 
@@ -399,38 +475,38 @@ async function cargarEstadosFirestore(uid) {
 }
 
 // === Sincronización en tiempo real de estados con Firestore ===
-let unsubscribeEstados = null;
+// (Sin listeners en tiempo real, no se necesita unsubscribeEstados)
 
 firebase.auth().onAuthStateChanged(async user => {
   const overlay = document.getElementById('login-blur-overlay');
   const logoutDiv = document.getElementById('logout-google-box');
-  if (unsubscribeEstados) { unsubscribeEstados(); unsubscribeEstados = null; }
   if (user) {
     if (overlay) overlay.remove();
     mostrarLogout(user.displayName || user.email);
-    // Escuchar en tiempo real los cambios de estados
-    unsubscribeEstados = db.collection('usuarios').doc(user.uid)
-      .onSnapshot(async doc => {
-        let estados = doc.exists ? doc.data().estados : null;
-        if (!estados) {
-          // Si hay datos en localStorage, usarlos; si no, objeto vacío
-          estados = JSON.parse(localStorage.getItem('estados') || '{}');
-          await guardarEstadosFirestore(user.uid, estados);
-        }
-        localStorage.setItem('estados', JSON.stringify(estados));
-        restaurarEstadosLocal();
-        actualizarSugerencias();
-      });
-    // Guardar automáticamente en Firestore al cambiar estados
+    // Al iniciar sesión, cargar los datos una sola vez desde Firestore
+    const doc = await db.collection('usuarios').doc(user.uid).get();
+    let materias = doc.exists && doc.data().materias ? doc.data().materias : [];
+    // Restaurar en la UI según nombre de materia
+    document.querySelectorAll('.materia').forEach(m => {
+      const nombre = m.getAttribute('data-nombre');
+      const select = m.querySelector('.estado-select');
+      if (!select) return;
+      const materiaGuardada = materias.find(mat => mat.nombre === nombre);
+      if (materiaGuardada) {
+        select.value = materiaGuardada.estado;
+        actualizarClaseMateria(m, materiaGuardada.estado);
+      } else {
+        select.value = '';
+        actualizarClaseMateria(m, 'ninguno');
+      }
+    });
+    actualizarSugerencias();
+    // Habilitar selects por si quedaron deshabilitados
     document.querySelectorAll('.estado-select').forEach(select => {
-      select.addEventListener('change', async () => {
-        const nuevosEstados = JSON.parse(localStorage.getItem('estados') || '{}');
-        await guardarEstadosFirestore(user.uid, nuevosEstados);
-      });
+      select.disabled = false;
     });
   } else {
     if (logoutDiv) logoutDiv.remove();
-    if (unsubscribeEstados) { unsubscribeEstados(); unsubscribeEstados = null; }
     inicializarLoginGoogle();
     // Limpiar estados locales
     localStorage.removeItem('estados');
