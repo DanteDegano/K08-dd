@@ -63,9 +63,9 @@
   .acordeon-niveles { display: none !important; }
   .niveles-grid { display: flex; gap: 24px; justify-content: center; }
   .año { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 18px 16px 12px 16px;flex: 1 1 0; }
-  body.dark-mode .año { background: #23232b; box-shadow: 0 2px 8px #0005; }
-  .año h2 { font-size: 1.2em; margin-bottom: 10px; color: #7a1b63; }
-  body.dark-mode .año h2 { color: #ffb347; }
+  body.dark-mode .año { background: #3d3d3d; box-shadow: 0 2px 8px #0005; }
+  .año h2 { font-size: 1.2em; margin-bottom: 10px; color: #b71234; }
+  body.dark-mode .año h2 { color: #ffffff; }
 }
 /* --- Responsive acordeón de niveles --- */
 .acordeon-niveles {
@@ -84,13 +84,13 @@
   transition: box-shadow 0.2s;
 }
 body.dark-mode .acordeon-nivel {
-  background: #23232b;
+  background: #3d3d3d;
   box-shadow: 0 2px 8px #0005;
 }
 .acordeon-titulo {
   width: 100%;
   text-align: left;
-  background: #7a1b63;
+  background: #b71234;
   color: #fff;
   border: none;
   padding: 18px 24px;
@@ -122,7 +122,7 @@ body.dark-mode .acordeon-nivel {
 .correlativa-estado { font-weight: bold; transition: color 0.2s; }
 .correlativa-aprobada, .correlativa-promocionada { color: #2e7d32; }
 .correlativa-cursada { color: #f9a825; }
-.correlativa-en-curso { color: #7a1b63; }
+.correlativa-en-curso { color: #b71234; }
 .correlativa-ninguno { color: #888; font-weight: normal; }
 /* Sugerencias Bot estilos */
 .sug-carrera {
@@ -175,7 +175,7 @@ body.dark-mode .sug-carrera span {
 }
 
 body.dark-mode #sugerencias-bot {
-  background: #292929 !important;
+  background: #3d3d3d !important;
   color: #f1f1f1;
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
@@ -187,7 +187,7 @@ body {
   color: #333; 
 }
 header {
-  background-color: #7a1b63;
+  background-color: #b71234;
   color: white;
   padding: 20px;
   text-align: center;
@@ -207,14 +207,14 @@ header {
   transition: background 0.2s, color 0.2s;
 }
 #darkModeToggle:hover {
-  background: #7a1b63;
+  background: #b71234;
   color: #fff;
 }
 #darkModeToggle.extravagant {
   position: absolute;
   right: 20px;
   top: 20px;
-  background: linear-gradient(90deg, #7a1b63 0%, #ffb347 100%);
+  background: linear-gradient(90deg, #b71234 0%, #ffffff 100%);
   color: #fff;
   border: 3px solid #fff;
   padding: 16px 38px 16px 28px;
@@ -222,7 +222,7 @@ header {
   cursor: pointer;
   font-size: 1.35em;
   font-weight: bold;
-  box-shadow: 0 4px 24px #7a1b6380, 0 1.5px 0 #fff inset;
+  box-shadow: 0 4px 24px #b7123480, 0 1.5px 0 #fff inset;
   transition: background 0.4s, color 0.3s, box-shadow 0.3s, border 0.3s, transform 0.2s;
   display: flex;
   align-items: center;
@@ -232,12 +232,12 @@ header {
   overflow: hidden;
 }
 #darkModeToggle.extravagant.luna {
-  background: linear-gradient(90deg, #7a1b63 0%, #ffb347 100%);
+  background: linear-gradient(90deg, #b71234 0%, #ffffff 100%);
   border: 3px solid #fff;
 }
 #darkModeToggle.extravagant.sol {
   background: linear-gradient(90deg, #ffe082 0%, #fffde4 100%);
-  color: #7a1b63;
+  color: #b71234;
   border: 3px solid #ffe082;
 }
 body.dark-mode #darkModeToggle.extravagant {
@@ -272,7 +272,7 @@ body.dark-mode #darkModeToggle.extravagant .star {
 #darkModeToggle.extravagant.luna span#darkModeIcon {
   animation: giroLuna 0.7s cubic-bezier(.68,-0.55,.27,1.55);
   color: #fff;
-  filter: drop-shadow(0 0 10px #7a1b6388);
+  filter: drop-shadow(0 0 10px #b7123488);
 }
 @keyframes giroSol {
   0% { transform: rotate(-180deg) scale(0.5); }
@@ -304,7 +304,7 @@ body.dark-mode #darkModeToggle.extravagant .star {
 .año h2 {
   text-align: center;
   margin-bottom: 10px;
-  color: #7a1b63;
+  color: #b71234;
 }
 
 
@@ -355,7 +355,7 @@ body.dark-mode #darkModeToggle.extravagant .star {
 
 /* FOOTER */
 footer {
-  background-color: #7a1b63;
+  background-color: #b71234;
   color: white;
   text-align: center;
   padding: 10px;

@@ -391,7 +391,7 @@ function inicializarLoginGoogle() {
       background: #fff; border-radius: 18px; box-shadow: 0 4px 32px #0005; padding: 38px 32px 32px 32px; min-width: 280px; max-width: 90vw;
       display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative;`;
     popup.innerHTML = `
-      <h2 style='margin-bottom:10px;font-size:1.3em;color:#7a1b63;'>Iniciar sesión</h2>
+      <h2 style='margin-bottom:10px;font-size:1.3em;color:#b71234;'>Iniciar sesión</h2>
       <button id="login-google-btn" style="background:#fff;color:#222;border:1px solid #ccc;padding:12px 28px;border-radius:8px;font-size:1.1em;display:flex;align-items:center;gap:10px;cursor:pointer;"><img src='https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg' style='width:24px;height:24px;'> Iniciar sesión con Google</button>
     `;
     overlay.appendChild(popup);
@@ -428,8 +428,8 @@ function mostrarLogout(nombre) {
       <span class="user-email" style='font-size:0.95em;color:#FFFFFF;'>${firebase.auth().currentUser?.email || ''}</span>
     </div>
     <div class="logout-btns" style="display:flex;gap:8px;">
-      <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#52023f;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>
-      <button id="logout-google-btn" style="background:#52023f;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>
+      <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#6d081c;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>
+      <button id="logout-google-btn" style="background:#6d081c;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>
     </div>`;
   // Hover visual y feedback para el botón guardar cambios
   if (!document.getElementById('toast-style')) {
