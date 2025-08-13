@@ -436,3 +436,8 @@ body.dark-mode #sugerencias-contenido ul {
     gap: 16px !important;
   }
 }
+@media (max-width: 720px) {
+  #logout-google-box .user-info .user-email {
+    display: none !important;
+  }
+}
