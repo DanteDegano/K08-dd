@@ -382,7 +382,7 @@ function mostrarLogout(nombre) {
   let logoutDiv = document.createElement('div');
   logoutDiv.id = 'logout-google-box';
   logoutDiv.style = 'display:flex;justify-content:flex-end;align-items:center;gap:16px;';
-  logoutDiv.innerHTML = `<span style='font-size:1.1em;'>👤 ${nombre}</span>
+  logoutDiv.innerHTML = `<span style='font-size:1.1em;'>${nombre}</span>
     <button id="guardar-cambios-btn" class="hover-guardar-btn" style="background:#1b7a4a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;transition:background 0.2s;">Guardar cambios</button>
     <button id="logout-google-btn" style="background:#7a1b63;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:1em;cursor:pointer;">Cerrar sesión</button>`;
   // Hover visual para el botón guardar cambios

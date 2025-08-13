@@ -1,4 +1,9 @@
 @media (max-width: 720px) {
+  .titulo-ingenieria {
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 720px) {
   #darkModeToggle {
     display: none !important;
   }
